@@ -11,7 +11,10 @@ function App() {
       <Header/>
       <StatusBar/>
        {/* StatusBar */}
-      <Graph />
+      <Graph sensor_type='co2'/>
+      <Graph sensor_type='co2'/>
+      <Graph sensor_type='co2'/>
+      <Graph sensor_type='co2'/>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 .status-bar{
+    margin-block-start: 20%;
     background-color: white;
     text-align: center;
     width: 50%;

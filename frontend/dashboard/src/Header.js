@@ -22,7 +22,7 @@ function Header() {
   }, []);
 
   return (
-    <AppBar className="header">
+    <AppBar className="header" position="static">
          <Toolbar>
       <Typography variant="h6" color="inherit" className="header__title">
         AWS Spheres

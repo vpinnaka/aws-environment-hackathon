@@ -3,9 +3,8 @@ import Plot from 'react-plotly.js';
 import sensordata from './data/temp.json';
 import './Graph.css'
 
-export default function Graph(sensor_type) {
+export default function Graph({sensor_type}) {
     const values = sensordata[0]
-    console.log(values);
 
     var layout = {
         // to highlight the timestamp we use shapes and create a rectangular
@@ -49,36 +48,41 @@ export default function Graph(sensor_type) {
     }
     return (
         <div className='graph'>
+            <p>{sensor_type} sensor data</p>
             <Plot
             
         data={[
           {
             x: values.timestamp,
-            y: values['co2_1'],
+            y: values[sensor_type + '_1'],
             type: 'scatter',
-            mode: 'lines+markers',
+            mode: 'lines',
+            name:sensor_type + '_1',
             
           },
           {
             x: values.timestamp,
-            y: values.co2_2,
+            y: values[sensor_type + '_2'],
             type: 'scatter',
-            mode: 'lines+markers',
+            mode: 'lines',
+            name:sensor_type + '_2',
             
           },
           {
             x: values.timestamp,
-            y: values.co2_3,
+            y: values[sensor_type + '_3'],
             type: 'scatter',
-            mode: 'lines+markers',
+            mode: 'lines',
+            name:sensor_type + '_3',
             
             
           },
           {
             x: values.timestamp,
-            y: values.co2_4,
+            y: values[sensor_type + '_4'],
             type: 'scatter',
-            mode: 'lines+markers',
+            mode: 'lines',
+            name:sensor_type + '_4',
             
           },
           
