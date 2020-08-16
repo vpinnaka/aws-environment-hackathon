@@ -1,6 +1,7 @@
 .app {
-  display: flex;
   align-content: center;
   width: 100%;
+  background-color: snow;
+  align-items: baseline;
 
 }
