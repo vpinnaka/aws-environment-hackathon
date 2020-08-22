@@ -189,5 +189,6 @@ def build_train_data ( inputDataframe, outputFilename, advanceTimedeltaStr = '15
 outputFilename = '../data/2018-01-01__2019-01-01__NConservatory_npWeekdayAllOrderedSensorsTimeRef'
 npTrainMatrix, sampleIndexBounds = build_train_data ( weekdayData_scaled, outputFilename )
 
-
+#%%
+np.save('npTrainMatrix.npy', npTrainMatrix)
 
