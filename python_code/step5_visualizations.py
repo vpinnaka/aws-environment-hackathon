@@ -6,6 +6,7 @@ import torch
 import matplotlib.pylab as plt
 import pandas as pd
 
+
 test_data = joblib.load('../test_data/test_dataset_2019.numpy')
 test_data = test_data.astype(np.float32)
 npTrainMatrix = np.load('npTrainMatrix.npy')
@@ -32,7 +33,7 @@ for i, cn in enumerate(orderedSensorList):
 plt.legend()
 plt.show()
 
-#%%
+#%% scatter plot
 f1 = 0
 # f2 = 2
 anomalies = idx
@@ -47,4 +48,23 @@ for f2 in [2,6,10,14]:
   plt.legend()
   plt.xlabel(weekdayData_scaled.columns[f1])
   plt.ylabel(weekdayData_scaled.columns[f2])
+
+#%% joy plot
+import joypy
+from matplotlib import cm
+
+labels= weekdayData_scaled.columns
+
+fig, axes = joypy.joyplot(weekdayData_scaled, grid="y", overlap = 2,linewidth=1, legend=False, figsize=(10,8),
+                          colormap=cm.autumn_r, title = "Distribution of all variables")
+plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+for a in axes:
+    a.set_xlim([-3,3]) 
+    
+# fig, axes = joypy.joyplot(weekdayData_scaled, by="dayIndex",  labels=labels, range_style='own', 
+#                           grid="y", linewidth=1, legend=False, figsize=(6,5),
+#                           title="Global daily temperature 1880-2014 \n(°C above 1950-80 average)",
+#                           colormap=cm.autumn_r)
+
+#%% time series decomposition
 

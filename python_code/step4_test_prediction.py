@@ -30,7 +30,7 @@ pred = np.zeros(len(testingData))
 pred[idx[:200]] = 1
 
 # examine anomalies in the test data set
-for i in range(5):
+for i in range(1):
   plt.figure(figsize=(10, 3))
   # plt.plot(test_data[idx[i], :])
   plt.plot(testingData[idx[i], :],color='r')
@@ -65,7 +65,7 @@ for i in range(200):
 #%% visualize anomalies
 ii = 1
 
-for ii in range(15,20):
+for ii in range(10,15):
     plt.figure(figsize=(10,3))
     plt.plot(testingData[idx[ii], :], linewidth = 3, label ='raw')
     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict')
