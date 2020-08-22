@@ -36,7 +36,12 @@ for i in range(5):
   plt.plot(testingData[idx[i], :],color='r')
   plt.plot(x_test_pred.detach().numpy()[idx[i],:])
   
-# find where anomaly starts  
-  
+#%% find where anomaly starts  
+
+error = x_test_pred.detach().numpy()[idx] - testingData[idx]
+errorWhen = np.zeros(200)
+
+for i in range(200):
+
 #%% Generate output
 df = pd.DataFrame(idx[:200])
