@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Aug 21 17:09:05 2020
-
-@author: qiaoyunpeng
-"""
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -17,13 +10,13 @@ import os
 
 # Load Data
 dataset = pd.read_csv( index_col = 0,  parse_dates = True, infer_datetime_format = True, 
-                         filepath_or_buffer = 'data/2018-01-01__2019-01-01__NConservatory__allMerged.csv')
+                         filepath_or_buffer = '../data/2018-01-01__2019-01-01__NConservatory__allMerged.csv')
 
 dataset.index = pd.to_datetime(dataset.index, utc=True).tz_convert('America/Los_Angeles')
 
 # test data
 import joblib
-test_data = joblib.load('DMC20_Data/test_dataset_2019.numpy')
+test_data = joblib.load('../test_data/test_dataset_2019.numpy')
 
 orderedSensorList = ( 'co2_1','co2_2', 'co2_3', 'co2_4',                        
                       'temp_1', 'temp_2', 'temp_3', 'temp_4',                     
@@ -195,3 +188,6 @@ def build_train_data ( inputDataframe, outputFilename, advanceTimedeltaStr = '15
 
 outputFilename = '../data/2018-01-01__2019-01-01__NConservatory_npWeekdayAllOrderedSensorsTimeRef'
 npTrainMatrix, sampleIndexBounds = build_train_data ( weekdayData_scaled, outputFilename )
+
+
+
