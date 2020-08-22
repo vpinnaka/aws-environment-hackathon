@@ -38,10 +38,32 @@ for i in range(5):
   
 #%% find where anomaly starts  
 
-error = x_test_pred.detach().numpy()[idx] - testingData[idx]
+error = np.abs(x_test_pred.detach().numpy()[idx[:200], :16*96] - testingData[idx[:200], :16*96])
 errorWhen = np.zeros(200)
+errorPeriod = []
 
 for i in range(200):
+    threshold = np.quantile(error[i], 0.9)
+    errorPeriod.append(np.where((error[i] >= threshold).tolist()))
+    # consecutive 20+ points anomalous
+    
+    errorWhen[i] = np.median(errorPeriod[i])
+
+#%% visualize anomalies
+ii = 1
+
+for ii in range(2):
+    plt.figure(figsize=(10,3))
+    plt.plot(testingData[idx[ii], :])
+    plt.plot(x_test_pred.detach().numpy()[idx[ii],:])
+    
+    plt.plot( np.array((errorPeriod[ii])).T, testingData[idx[ii],errorPeriod[ii]].T,'--',color='r')
+    
+    plt.plot( errorWhen[ii], testingData[idx[ii],int(errorWhen[ii])],'^',markersize=15, markerfacecolor='r',
+         markeredgewidth=.5, markeredgecolor='k')
 
 #%% Generate output
-df = pd.DataFrame(idx[:200])
+df = pd.DataFrame(np.array([idx[:200].astype(int), \
+                            errorWhen. astype(int)]).T, columns = ['day','time'])
+df.to_csv('submission.txt', index = False)
+df.head()
