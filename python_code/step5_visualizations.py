@@ -1,7 +1,7 @@
 import matplotlib.gridspec as gridspec
 import seaborn as sns
 
-
+# distributions
 plt.figure(figsize=(12,8*4))
 gs = gridspec.GridSpec(7, 4)
 for i, cn in enumerate(weekdayData_scaled.columns[:16]):

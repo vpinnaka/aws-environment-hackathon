@@ -105,8 +105,9 @@ j = 0
 for s in samples:
     fig, ax = plt.subplots(3, 2, sharex='col', sharey='row', figsize=(10, 6))
     
-    for i in range(6):
+    for i in range(6,12):
       # plt.figure(figsize=(10, 3))
+      i = i % 6
       plt.subplot(3, 2, i+1)
       plt.plot(testingData[s[i], :])
       plt.plot(x_test_pred.detach().numpy()[s[i],:])
