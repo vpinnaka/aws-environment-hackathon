@@ -4,6 +4,7 @@ from scipy.signal import lfilter
 import torch
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pylab as plt
 
 # targetDevice = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 targetDeviceCPU = torch.device('cpu')
@@ -34,24 +35,24 @@ dataLoaderTrain = DataLoader( X_train.astype('float32'),
 
 inputDimensionality = X_train.shape[1]
 
-model = nn.Sequential (
-    nn.Linear(inputDimensionality, inputDimensionality//2), nn.Sigmoid(),
-    nn.Linear(inputDimensionality//2, inputDimensionality//4), nn.Sigmoid(),
-    nn.Linear(inputDimensionality//4, inputDimensionality//10), nn.Sigmoid(),
-    nn.Linear(inputDimensionality//10, inputDimensionality//4), nn.Sigmoid(),
-    nn.Linear(inputDimensionality//4, inputDimensionality//2), nn.Sigmoid(),
-    nn.Linear(inputDimensionality//2, inputDimensionality)
-)
-
-# USE RELU fn
 # model = nn.Sequential (
-#     nn.Linear(inputDimensionality, inputDimensionality//2), nn.ReLU(),
-#     nn.Linear(inputDimensionality//2, inputDimensionality//4), nn.ReLU(),
-#     nn.Linear(inputDimensionality//4, inputDimensionality//10), nn.ReLU(),
-#     nn.Linear(inputDimensionality//10, inputDimensionality//4), nn.ReLU(),
-#     nn.Linear(inputDimensionality//4, inputDimensionality//2), nn.ReLU(),
+#     nn.Linear(inputDimensionality, inputDimensionality//2), nn.Sigmoid(),
+#     nn.Linear(inputDimensionality//2, inputDimensionality//4), nn.Sigmoid(),
+#     nn.Linear(inputDimensionality//4, inputDimensionality//10), nn.Sigmoid(),
+#     nn.Linear(inputDimensionality//10, inputDimensionality//4), nn.Sigmoid(),
+#     nn.Linear(inputDimensionality//4, inputDimensionality//2), nn.Sigmoid(),
 #     nn.Linear(inputDimensionality//2, inputDimensionality)
 # )
+
+# USE RELU fn
+model = nn.Sequential (
+    nn.Linear(inputDimensionality, inputDimensionality//2), nn.ReLU(),
+    nn.Linear(inputDimensionality//2, inputDimensionality//4), nn.ReLU(),
+    nn.Linear(inputDimensionality//4, inputDimensionality//10), nn.ReLU(),
+    nn.Linear(inputDimensionality//10, inputDimensionality//4), nn.ReLU(),
+    nn.Linear(inputDimensionality//4, inputDimensionality//2), nn.ReLU(),
+    nn.Linear(inputDimensionality//2, inputDimensionality)
+)
 
 def train_model ( model, dataLoader, targeDevice, nEpochs = 10 ):
 
@@ -104,8 +105,8 @@ def train_model ( model, dataLoader, targeDevice, nEpochs = 10 ):
 model, lossHistory, batchLoss = train_model( model, dataLoaderTrain, targetDevice, nEpochs = 10 )
 
 # print('elapsed time : {} '.format(time.time() - startTime))
-# MODEL_PATH = 'model_RELU.pth'
-# torch.save(model, MODEL_PATH)
+MODEL_PATH = 'model.pth'
+torch.save(model, MODEL_PATH)
 
 #%% visualize progression of learning
 plt.figure(figsize=(6,3))

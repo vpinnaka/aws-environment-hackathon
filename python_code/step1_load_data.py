@@ -14,9 +14,9 @@ dataset = pd.read_csv( index_col = 0,  parse_dates = True, infer_datetime_format
 
 dataset.index = pd.to_datetime(dataset.index, utc=True).tz_convert('America/Los_Angeles')
 
-# test data
-import joblib
-test_data = joblib.load('../test_data/test_dataset_2019.numpy')
+# # test data
+# import joblib
+# test_data = joblib.load('../test_data/test_dataset_2019.numpy')
 
 orderedSensorList = ( 'co2_1','co2_2', 'co2_3', 'co2_4',                        
                       'temp_1', 'temp_2', 'temp_3', 'temp_4',                     
