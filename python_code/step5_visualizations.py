@@ -1,12 +1,29 @@
 import matplotlib.gridspec as gridspec
 import seaborn as sns
+import joblib
+import numpy as np
+import torch
+import matplotlib.pylab as plt
+import pandas as pd
+
+test_data = joblib.load('../test_data/test_dataset_2019.numpy')
+test_data = test_data.astype(np.float32)
+npTrainMatrix = np.load('npTrainMatrix.npy')
+
+orderedSensorList = ( 'co2_1','co2_2', 'co2_3', 'co2_4',                        
+                      'temp_1', 'temp_2', 'temp_3', 'temp_4',                     
+                      'dew_1','dew_2', 'dew_3', 'dew_4',
+                      'relH_1', 'relH_2', 'relH_3', 'relH_4')
+
+idx = pd.read_csv("submission.txt")["day"] # anomaly indexes
 
 # distributions
 plt.figure(figsize=(12,8*4))
 gs = gridspec.GridSpec(7, 4)
-for i, cn in enumerate(weekdayData_scaled.columns[:16]):
+
+for i, cn in enumerate(orderedSensorList):
     ax = plt.subplot(gs[i])
-    sns.distplot(weekdayData_scaled[cn], bins=100, label = 'train') # train data
+    sns.distplot(npTrainMatrix[:,96*i:96*(i+1)], bins=100, label = 'train') # train data
     sns.distplot(test_data[:,96*i:96*(i+1)], bins=100, label = 'test') # test data
     sns.distplot(test_data[idx,96*i:96*(i+1)], bins=100, label = 'anomalous') # anomolous data
     ax.set_xlabel('')
@@ -15,13 +32,13 @@ for i, cn in enumerate(weekdayData_scaled.columns[:16]):
 plt.legend()
 plt.show()
 
-
+#%%
 f1 = 0
 # f2 = 2
 anomalies = idx
 for f2 in [2,6,10,14]:
   fig, ax = plt.subplots(figsize=(10,4))
-  ax.scatter(X_train[:, 96*f1:96*(f1+1):7],X_train[:, 96*f2:96*(f2+1):7], marker="s", s = 80, color="lightBlue", label = "train")
+  ax.scatter(npTrainMatrix[:, 96*f1:96*(f1+1):7],npTrainMatrix[:, 96*f2:96*(f2+1):7], marker="s", s = 80, color="lightBlue", label = "train")
   ax.scatter(test_data[:, 96*f1:96*(f1+1):7], test_data[:, 96*f2:96*(f2+1):7], marker="o", color='Green', alpha = 0.5, label = "test")
   ax.scatter(test_data[anomalies, 96*f1:96*(f1+1)], test_data[anomalies, 96*f2:96*(f2+1)], marker ="*",color='Red', alpha = 0.5, label = "anomalous")
   
@@ -31,8 +48,3 @@ for f2 in [2,6,10,14]:
   plt.xlabel(weekdayData_scaled.columns[f1])
   plt.ylabel(weekdayData_scaled.columns[f2])
 
-# for i, txt in enumerate(train_test['V14'].index):
-#        if train_test_y.loc[txt] == 1 :
-#             ax.annotate('*', (train_test['V14'].loc[txt],train_test['V11'].loc[txt]),fontsize=13,color='Red')
-#        if predictions[i] == True :
-#             ax.annotate('o', (train_test['V14'].loc[txt],train_test['V11'].loc[txt]),fontsize=15,color='Green')
