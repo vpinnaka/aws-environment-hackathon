@@ -6,7 +6,7 @@ import matplotlib.pylab as plt
 # Create our own anomalous data set and see how the model performs
 npTrainMatrix = np.load('npTrainMatrix.npy')
 MODEL_PATH = 'model.pth'
-# MODEL_PATH = 'model_RELU.pth'
+MODEL_PATH = 'model_RELU.pth'
 model = torch.load(MODEL_PATH)
 
 # np.random.seed(30)

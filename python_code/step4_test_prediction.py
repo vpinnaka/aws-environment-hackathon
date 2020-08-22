@@ -25,15 +25,18 @@ plt.ylabel("No of samples")
 plt.show()
 
 #%%
-idx = (-test_mae_loss).argsort()[:200] # predicted windows where anomaly exists
-pred = np.zeros(len(npTrainMatrix))
-pred[idx] = 1
+idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
+pred = np.zeros(len(testingData))
+pred[idx[:200]] = 1
 
 # examine anomalies in the test data set
-for i in range(-10,-1):
+for i in range(5):
   plt.figure(figsize=(10, 3))
   # plt.plot(test_data[idx[i], :])
   plt.plot(testingData[idx[i], :],color='r')
   plt.plot(x_test_pred.detach().numpy()[idx[i],:])
   
-# Generate output
+# find where anomaly starts  
+  
+#%% Generate output
+df = pd.DataFrame(idx[:200])
