@@ -7,7 +7,7 @@ from scipy.signal import lfilter
 
 
 # MODEL_PATH = 'model.pth'
-MODEL_PATH = 'model_RELU.pth'
+MODEL_PATH = 'model_RELU_v4.pth'
 model = torch.load(MODEL_PATH)
 
 
@@ -63,7 +63,8 @@ for i in range(200):
     for j in np.array(sorted(err)).T:
         # isAnomalous = sorted(err) ==  np.array(range(np.min(err), np.max((err))+1))
         if (j+1) in np.array(sorted(err)) and (j+2) in np.array(sorted(err)) and \
-            (j+3) in np.array(sorted(err)) and (j+4) in np.array(sorted(err)):
+            (j+3) in np.array(sorted(err)) and (j+4) in np.array(sorted(err)) and \
+                 (j+5) in np.array(sorted(err)) and (j+6) in np.array(sorted(err)):
             maxErrorLoc = j
             break
     
@@ -72,7 +73,7 @@ for i in range(200):
 #%% visualize anomalies
 ii = 1
 
-for ii in range(10):
+for ii in range(200):
     plt.figure(figsize=(10,3))
     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw')
     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict')
