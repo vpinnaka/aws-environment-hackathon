@@ -1,12 +1,13 @@
 import numpy as np
 import torch
 import matplotlib.pylab as plt
+from scipy.signal import lfilter
 
 
 # Create our own anomalous data set and see how the model performs
 npTrainMatrix = np.load('npTrainMatrix.npy')
 # MODEL_PATH = 'model.pth'
-MODEL_PATH = 'model_RELU.pth'
+MODEL_PATH = 'model_RELU_v2.pth'
 model = torch.load(MODEL_PATH)
 
 # np.random.seed(30)
@@ -28,9 +29,14 @@ for j in randomRows:
 #   i = np.random.choice(16)
 #   constructedData2[j, 96*(i):96*(i+1)] *=  2*np.random.choice([1,-1]) # scale the subset
 
+n = 20  # the larger n is, the smoother curve will be
+b = [1.0 / n] * n
+a = 1
+constructedData2_filter = lfilter(b,a,constructedData2)
 
 # Get test MAE loss.
 testingData = constructedData2.astype(np.float32)
+testingData = constructedData2_filter.astype(np.float32) # filter
 x_test_pred = model.forward(torch.from_numpy(testingData))
 
 # test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)

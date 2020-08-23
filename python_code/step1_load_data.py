@@ -12,6 +12,11 @@ import os
 dataset = pd.read_csv( index_col = 0,  parse_dates = True, infer_datetime_format = True, 
                          filepath_or_buffer = '../data/2018-01-01__2019-01-01__NConservatory__allMerged.csv')
 
+
+# dataset = pd.read_csv( index_col = 0,  parse_dates = True, infer_datetime_format = True, 
+#                          filepath_or_buffer = '../data/2018-01-01__2019-01-01__SConservatory__allMerged.csv')
+
+
 dataset.index = pd.to_datetime(dataset.index, utc=True).tz_convert('America/Los_Angeles')
 
 # # test data
