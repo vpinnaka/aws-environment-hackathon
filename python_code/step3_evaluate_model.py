@@ -7,7 +7,7 @@ from scipy.signal import lfilter
 # Create our own anomalous data set and see how the model performs
 npTrainMatrix = np.load('npTrainMatrix.npy')
 # MODEL_PATH = 'model.pth'
-MODEL_PATH = 'model_RELU_v4.pth'
+MODEL_PATH = 'model_RELU_v5.pth'
 model = torch.load(MODEL_PATH)
 
 # np.random.seed(30)
