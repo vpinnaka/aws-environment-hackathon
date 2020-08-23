@@ -85,8 +85,8 @@ for ii in range(10):
              markeredgewidth=.5, markeredgecolor='k', label = 'start')
     plt.legend()
     
-#%%
-error = np.abs(x_test_pred.detach().numpy()[idx[:200], :] - testingData[idx[:200], :])
+#%% reconstruction errors
+# error = np.abs(x_test_pred.detach().numpy()[idx[:200], :] - testingData[idx[:200], :])
 for ii in range(6,7):
     plt.figure(figsize=(10,3))
     plt.plot(error[ii, :], linewidth = 3, label ='error')

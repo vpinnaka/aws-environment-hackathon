@@ -6,8 +6,8 @@ from scipy.signal import lfilter
 
 # Create our own anomalous data set and see how the model performs
 npTrainMatrix = np.load('npTrainMatrix.npy')
-# MODEL_PATH = 'model.pth'
-MODEL_PATH = 'model_RELU_v2.pth'
+MODEL_PATH = 'model.pth'
+# MODEL_PATH = 'model_RELU_v2.pth'
 model = torch.load(MODEL_PATH)
 
 # np.random.seed(30)
@@ -103,6 +103,47 @@ print('fscore: {}'.format(fscore))
 print('support: {}'.format(support))
 print(TP/(TP+FP))
 print('TP = {0}, TN = {1}, FP = {2}, FN = {3}'.format(TP, TN, FP, FN))
+
+#%% precision-recall graphs
+# example of a roc curve for a predictive model
+from sklearn.metrics import roc_curve
+from matplotlib import pyplot
+
+pred = test_mae_loss/np.max(test_mae_loss) #np.zeros(len(npTrainMatrix))
+pred[idx] = test_mae_loss[idx]/np.max(test_mae_loss)#1
+
+# plot no skill roc curve
+pyplot.plot([0, 1], [0, 1], linestyle='--', label='No Skill')
+# calculate roc curve for model
+fpr, tpr, _ = roc_curve(labels, pred)
+# plot model roc curve
+pyplot.plot(fpr, tpr, marker='.', label='AutoEncoder')
+# axis labels
+pyplot.xlabel('False Positive Rate')
+pyplot.ylabel('True Positive Rate')
+# show the legend
+pyplot.legend()
+# show the plot
+pyplot.show()
+
+#%%
+from sklearn.metrics import precision_recall_curve
+# calculate the no skill line as the proportion of the positive class
+no_skill = len(labels[labels==1]) / len(labels)
+# plot the no skill precision-recall curve
+pyplot.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
+# calculate model precision-recall curve
+precision, recall, _ = precision_recall_curve(labels, pred)
+# plot the model precision-recall curve
+pyplot.plot(recall, precision, marker='.', label='AutoEncoder')
+# axis labels
+pyplot.xlabel('Recall')
+pyplot.ylabel('Precision')
+# show the legend
+pyplot.legend()
+# show the plot
+pyplot.show()
+
 #%% visualize examples
 samples = [FNs, FPs, TNs, TPs]
 legends = ["FNs","FPs","TNs","TPs"]
