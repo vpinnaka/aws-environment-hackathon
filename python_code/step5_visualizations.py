@@ -66,5 +66,10 @@ for a in axes:
 #                           title="Global daily temperature 1880-2014 \n(°C above 1950-80 average)",
 #                           colormap=cm.autumn_r)
 
-#%% time series decomposition
+#%%
+ax = plt.figure()
+sns.distplot(npTrainMatrix[:,96*i:96*(i+1)], bins=100, label = 'train') # train data
+sns.distplot(test_data[:,96*i:96*(i+1)], bins=100, label = 'test') # test data
+sns.distplot(test_data[idx,96*i:96*(i+1)], bins=100, label = 'anomalous') # anomolous data
 
+plt.legend()

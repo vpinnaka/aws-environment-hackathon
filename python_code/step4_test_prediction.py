@@ -84,6 +84,22 @@ for ii in range(10):
         plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
              markeredgewidth=.5, markeredgecolor='k', label = 'start')
     plt.legend()
+    
+#%%
+error = np.abs(x_test_pred.detach().numpy()[idx[:200], :] - testingData[idx[:200], :])
+for ii in range(6,7):
+    plt.figure(figsize=(10,3))
+    plt.plot(error[ii, :], linewidth = 3, label ='error')
+    
+    
+    if ii < 200:
+        plt.plot( np.array((errorPeriod[ii])).T, error[ii,errorPeriod[ii]].T,'.',color='y',\
+                 linewidth = 3, label = 'anomaly')
+        
+        plt.plot( errorWhen[ii], error[ii,int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
+             markeredgewidth=.5, markeredgecolor='k', label = 'start')
+    plt.legend()
+    
 #%% Generate output
 df = pd.DataFrame(np.array([idx[:200].astype(int), \
                             errorWhen. astype(int)]).T, columns = ['day','time'])
