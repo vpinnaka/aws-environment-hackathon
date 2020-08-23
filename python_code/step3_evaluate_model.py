@@ -6,8 +6,8 @@ from scipy.signal import lfilter
 
 # Create our own anomalous data set and see how the model performs
 npTrainMatrix = np.load('npTrainMatrix.npy')
-MODEL_PATH = 'model.pth'
-# MODEL_PATH = 'model_RELU_v2.pth'
+# MODEL_PATH = 'model.pth'
+MODEL_PATH = 'model_RELU_v4.pth'
 model = torch.load(MODEL_PATH)
 
 # np.random.seed(30)
@@ -39,8 +39,8 @@ testingData = constructedData2.astype(np.float32)
 testingData = constructedData2_filter.astype(np.float32) # filter
 x_test_pred = model.forward(torch.from_numpy(testingData))
 
-# test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
-test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
+test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
+# test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
 test_mae_loss = test_mae_loss.reshape((-1))
 
 plt.figure(figsize=(6,3)) 

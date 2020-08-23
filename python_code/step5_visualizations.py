@@ -40,7 +40,7 @@ anomalies = idx
 for f2 in [2,6,10,14]:
   fig, ax = plt.subplots(figsize=(10,4))
   ax.scatter(npTrainMatrix[:, 96*f1:96*(f1+1):7],npTrainMatrix[:, 96*f2:96*(f2+1):7], marker="s", s = 80, color="lightBlue", label = "train")
-  ax.scatter(test_data[:, 96*f1:96*(f1+1):7], test_data[:, 96*f2:96*(f2+1):7], marker="o", color='Green', alpha = 0.5, label = "test")
+  ax.scatter(test_data[:, 96*f1:96*(f1+1)], test_data[:, 96*f2:96*(f2+1)], marker="o", color='Green', alpha = 0.5, label = "test")
   ax.scatter(test_data[anomalies, 96*f1:96*(f1+1)], test_data[anomalies, 96*f2:96*(f2+1)], marker ="*",color='Red', alpha = 0.5, label = "anomalous")
   
   # ax.scatter(test_data[anomalies, 96*f1:96*(f1+1)], test_data[anomalies, 96*f2:96*(f2+1)], marker ="*",color='Red', alpha = 0.5, label = "anomalous")
@@ -73,3 +73,6 @@ sns.distplot(test_data[:,96*i:96*(i+1)], bins=100, label = 'test') # test data
 sns.distplot(test_data[idx,96*i:96*(i+1)], bins=100, label = 'anomalous') # anomolous data
 
 plt.legend()
+
+#%%
+# plt.plot(test_data[7371, :])

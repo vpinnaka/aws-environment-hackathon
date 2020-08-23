@@ -21,8 +21,8 @@ testingData = test_data2.astype(np.float32)
 
 x_test_pred = model.forward(torch.from_numpy(testingData))
 
-# test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
-test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
+test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
+# test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
 test_mae_loss = test_mae_loss.reshape((-1))
 
 plt.figure(figsize=(6,3)) 
@@ -73,7 +73,7 @@ for i in range(200):
 #%% visualize anomalies
 ii = 1
 
-for ii in range(200):
+for ii in range(5):
     plt.figure(figsize=(10,3))
     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw')
     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict')
@@ -86,6 +86,31 @@ for ii in range(200):
              markeredgewidth=.5, markeredgecolor='k', label = 'start')
     plt.legend()
     
+#%%
+from matplotlib import pyplot as plt
+from celluloid import Camera
+import matplotlib.animation as animation
+import imageio
+
+fig = plt.figure(figsize=(10,3))
+camera = Camera(fig)
+for ii in range(201,220):
+    plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
+    plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
+    plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
+                 linewidth = 3, label = 'anomaly')
+        
+    plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
+         markeredgewidth=.5, markeredgecolor='k', label = 'start')
+    plt.ylim([-4.5, 5])
+    # plt.plot([i] * 10)
+    camera.snap()
+animation = camera.animate()
+animation.save('dynamic_images2.gif')
+
+
+
+
 #%% reconstruction errors
 # error = np.abs(x_test_pred.detach().numpy()[idx[:200], :] - testingData[idx[:200], :])
 for ii in range(6,7):
@@ -102,7 +127,7 @@ for ii in range(6,7):
     plt.legend()
     
 #%% Generate output
-df = pd.DataFrame(np.array([idx[:200].astype(int), \
+df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
                             errorWhen. astype(int)]).T, columns = ['day','time'])
 df.to_csv('submission.txt', index = False)
 df.head()
