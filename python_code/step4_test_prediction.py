@@ -33,9 +33,9 @@ plt.ylabel("No of samples")
 plt.show()
 
 #%%
-# idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
-idx_in_subset = (-test_mae_loss[np.array(all_in_one)-1]).argsort()[:200] 
-idx = np.array(all_in_one)[idx_in_subset] - 1
+idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
+# idx_in_subset = (-test_mae_loss[np.array(all_in_one)-1]).argsort()[:200] 
+# idx = np.array(all_in_one)[idx_in_subset] - 1
 
 pred = np.zeros(len(testingData))
 pred[idx[:200]] = 1
@@ -114,7 +114,7 @@ for ii in range(200):
     # plt.plot([i] * 10)
     camera.snap()
 animation = camera.animate()
-animation.save('dynamic_images2.gif')
+animation.save('dynamic_images.gif')
 
 
 
@@ -135,9 +135,9 @@ for ii in range(6,7):
     plt.legend()
     
 #%% Generate output
-df = pd.DataFrame(np.array([1+idx[:250].astype(int), \
-                            1 + errorWhen[:250]. astype(int)]).T, columns = ['day','time'])
-df.to_csv('submission.txt', index = False)
+df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
+                            1 + errorWhen[:200]. astype(int)]).T, columns = ['day','time'])
+df.to_csv('submissionv2.txt', index = False)
 df.head()
 
 #%%
@@ -163,6 +163,7 @@ def parse_submission ( filename ):
 
 #%% compare 3 methods
 df = pd.read_csv("submission.txt")
+dfv2 = pd.read_csv("submissionv2.txt")
 df1 = pd.read_csv("submission_filter_mean.txt")
 df2 = pd.read_csv("submission_nofilter_mean.txt")
 df3 = pd.read_csv("submission_filter_relu.txt")
@@ -176,8 +177,9 @@ df10 = pd.read_csv("submission_nofilter_median.txt") # median loss
 df11 = pd.read_csv("submission_filter_v3.txt")
 df12 = pd.read_csv("submission_nofilter_v3.txt") # quantile loss
 
+idx0 = np.array(df["day"])
 idx1 = np.array(df1["day"])
-idx2 = np.array(df2["day"])
+idx2 = np.array(dfv2["day"])
 idx3 = np.array(df3["day"])
 idx4 = np.array(df4["day"])
 idx5 = np.array(df5["day"])
@@ -191,7 +193,9 @@ idx12 = np.array(df12["day"])
 
 
 all_in_one = []
-
+for i in range(len(test_data)+1):
+    if i in idx0 and i in idx2:
+        all_in_one.append(i)
 # for i in range(len(test_data)+1):
 #     if i in idx3[:150] or (i in idx3[:250] and i in idx4[:250]) or (i in idx7[:250] and i in idx8[:250]) or\
 #         (i in idx11[:60] and i in idx12[:60]) or (i in idx9[:60] and i in idx10[:60]) \
@@ -201,22 +205,22 @@ all_in_one = []
 #             all_in_one.append(i)
 
 
-for i in range(len(test_data)+1):
-    cnt = 0
-    if i in idx3[:150]:
-        cnt += 2
-    if (i in idx3[:250] and i in idx4[:250]): 
-         cnt += 2
-    if (i in idx7[:250] and i in idx8[:250]):
-       cnt += 2
-    if (i in idx11[:60] and i in idx12[:60]):
-         cnt += 2
-    if (i in idx9[:60] and i in idx10[:60]):
-         cnt += 2
-    if (i in idx1[:50] and i in idx2[:50]):
-         cnt += 2
-    if cnt > 1:
-        all_in_one.append(i)
+# for i in range(len(test_data)+1):
+#     cnt = 0
+#     if i in idx3[:150]:
+#         cnt += 2
+#     if (i in idx3[:250] and i in idx4[:250]): 
+#          cnt += 2
+#     if (i in idx7[:250] and i in idx8[:250]):
+#        cnt += 2
+#     if (i in idx11[:60] and i in idx12[:60]):
+#          cnt += 2
+#     if (i in idx9[:60] and i in idx10[:60]):
+#          cnt += 2
+#     if (i in idx1[:50] and i in idx2[:50]):
+#          cnt += 2
+#     if cnt > 1:
+#         all_in_one.append(i)
             
 #%%
 from matplotlib import pyplot as plt
