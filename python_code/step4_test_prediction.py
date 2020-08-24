@@ -7,7 +7,7 @@ from scipy.signal import lfilter
 
 
 # MODEL_PATH = 'model.pth'
-MODEL_PATH = 'models/model_RELU_v5.pth'
+MODEL_PATH = 'models/model_RELU_v4.pth'
 model = torch.load(MODEL_PATH)
 
 
@@ -81,7 +81,7 @@ for i in range(200):
 #%% visualize anomalies
 ii = 1
 
-for ii in range(5):
+for ii in range(220,225):
     plt.figure(figsize=(10,3))
     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw')
     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict')
@@ -102,19 +102,19 @@ import imageio
 
 fig = plt.figure(figsize=(10,3))
 camera = Camera(fig)
-for ii in range(200):
+for ii in range(300,400):
     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
-    plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
-                  linewidth = 3, label = 'anomaly')
+    # plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
+    #               linewidth = 3, label = 'anomaly')
         
-    plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
-          markeredgewidth=.5, markeredgecolor='k', label = 'start')
+    # plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
+    #       markeredgewidth=.5, markeredgecolor='k', label = 'start')
     plt.ylim([-4.5, 5])
     # plt.plot([i] * 10)
     camera.snap()
 animation = camera.animate()
-animation.save('dynamic_images.gif')
+animation.save('dynamic_images2.gif')
 
 
 
