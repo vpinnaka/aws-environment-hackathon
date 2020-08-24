@@ -22,8 +22,8 @@ testingData = test_data2.astype(np.float32)
 x_test_pred = model.forward(torch.from_numpy(testingData))
 
 # test_mae_loss = np.median(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
-# test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.9,axis = 1)
-test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy())**2, axis = 1)
+test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.9,axis = 1)
+# test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy())**2, axis = 1)
 test_mae_loss = test_mae_loss.reshape((-1))
 
 plt.figure(figsize=(6,3)) 
@@ -34,6 +34,9 @@ plt.show()
 
 #%%
 idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
+idx_in_subset = (-test_mae_loss[np.array(all_in_one)-1]).argsort()[:200] 
+idx = np.array(all_in_one)[idx_in_subset] - 1
+
 pred = np.zeros(len(testingData))
 pred[idx[:200]] = 1
 
@@ -97,21 +100,21 @@ from celluloid import Camera
 import matplotlib.animation as animation
 import imageio
 
-# fig = plt.figure(figsize=(10,3))
-# camera = Camera(fig)
-# for ii in range(200):
-#     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
-#     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
-#     plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
-#                   linewidth = 3, label = 'anomaly')
+fig = plt.figure(figsize=(10,3))
+camera = Camera(fig)
+for ii in range(200):
+    plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
+    plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
+    plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
+                  linewidth = 3, label = 'anomaly')
         
-#     plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
-#           markeredgewidth=.5, markeredgecolor='k', label = 'start')
-#     plt.ylim([-4.5, 5])
-#     # plt.plot([i] * 10)
-#     camera.snap()
-# animation = camera.animate()
-# animation.save('dynamic_images2.gif')
+    plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
+          markeredgewidth=.5, markeredgecolor='k', label = 'start')
+    plt.ylim([-4.5, 5])
+    # plt.plot([i] * 10)
+    camera.snap()
+animation = camera.animate()
+animation.save('dynamic_images2.gif')
 
 
 
@@ -133,8 +136,8 @@ for ii in range(6,7):
     
 #%% Generate output
 df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
-                            errorWhen. astype(int)]).T, columns = ['day','time'])
-df.to_csv('submission_nofilter_mean.txt', index = False)
+                            1 + errorWhen. astype(int)]).T, columns = ['day','time'])
+df.to_csv('submission.txt', index = False)
 df.head()
 
 #%%
@@ -165,6 +168,8 @@ df3 = pd.read_csv("submission_filter_relu.txt")
 df4 = pd.read_csv("submission_nofilter_relu.txt")
 df5 = pd.read_csv("submission_filter_model.txt")
 df6 = pd.read_csv("submission_nofilter_model.txt")
+df7 = pd.read_csv("submission_filter_v4.txt")
+df8 = pd.read_csv("submission_nofilter_v4.txt") # quantile loss
 
 idx1 = np.array(df1["day"])
 idx2 = np.array(df2["day"])
@@ -172,13 +177,16 @@ idx3 = np.array(df3["day"])
 idx4 = np.array(df4["day"])
 idx5 = np.array(df5["day"])
 idx6 = np.array(df6["day"])
+idx7 = np.array(df7["day"])
+idx8 = np.array(df8["day"])
 
 # idx2_in_idx1 = []
 all_in_one = []
 
 for i in range(len(test_data)):
-    # if i in idx3:
-        if (i in idx1 and i in idx2) or (i in idx3 and i in idx4) or (i in idx5 and i in idx6):
+    # if i in idx3 and i in idx4:
+        # if ((i in idx3 and i in idx4) and (i in idx1 or i in idx5 or i in idx7)):# or (i in idx5 and i in idx6) or (i in idx1 and i in idx2):
+          if((i in idx1 and i in idx2) or (i in idx3 and i in idx4) or (i in idx5 and i in idx6) or (i in idx7 and i in idx8)): 
             all_in_one.append(i)
 
 #%%
