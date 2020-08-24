@@ -162,6 +162,7 @@ def parse_submission ( filename ):
 # dayIndicators, startSampleIndicators = parse_submission ( 'submission.txt')
 
 #%% compare 3 methods
+df = pd.read_csv("submission.txt")
 df1 = pd.read_csv("submission_filter_mean.txt")
 df2 = pd.read_csv("submission_nofilter_mean.txt")
 df3 = pd.read_csv("submission_filter_relu.txt")
@@ -170,6 +171,10 @@ df5 = pd.read_csv("submission_filter_model.txt")
 df6 = pd.read_csv("submission_nofilter_model.txt")
 df7 = pd.read_csv("submission_filter_v4.txt")
 df8 = pd.read_csv("submission_nofilter_v4.txt") # quantile loss
+df9 = pd.read_csv("submission_filter_median.txt")
+df10 = pd.read_csv("submission_nofilter_median.txt") # median loss
+df11 = pd.read_csv("submission_filter_v3.txt")
+df12 = pd.read_csv("submission_nofilter_v3.txt") # quantile loss
 
 idx1 = np.array(df1["day"])
 idx2 = np.array(df2["day"])
@@ -179,14 +184,19 @@ idx5 = np.array(df5["day"])
 idx6 = np.array(df6["day"])
 idx7 = np.array(df7["day"])
 idx8 = np.array(df8["day"])
+idx9 = np.array(df9["day"])
+idx10 = np.array(df10["day"])
+idx11 = np.array(df11["day"])
+idx12 = np.array(df12["day"])
 
 # idx2_in_idx1 = []
 all_in_one = []
 
 for i in range(len(test_data)):
-    # if i in idx3 and i in idx4:
+    if (i in idx3 and i in idx4) or (i in idx7 and i in idx8) or\
+        (i in idx11 and i in idx12) or ((i in idx9 and i in idx10) or (i in idx1 and i in idx2)):
         # if ((i in idx3 and i in idx4) and (i in idx1 or i in idx5 or i in idx7)):# or (i in idx5 and i in idx6) or (i in idx1 and i in idx2):
-          if((i in idx1 and i in idx2) or (i in idx3 and i in idx4) or (i in idx5 and i in idx6) or (i in idx7 and i in idx8)): 
+          # if((i in idx1 and i in idx2) or (i in idx3 and i in idx4) or (i in idx5 and i in idx6) or (i in idx7 and i in idx8)): 
             all_in_one.append(i)
 
 #%%
@@ -214,3 +224,7 @@ animation = camera.animate()
 animation.save('dynamic_images2.gif')
 
 
+#%%
+for i in range(126, 144):
+    plt.figure()
+    plt.plot(test_data[df["day"][i],:])
