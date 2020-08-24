@@ -33,7 +33,7 @@ plt.ylabel("No of samples")
 plt.show()
 
 #%%
-idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
+# idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
 idx_in_subset = (-test_mae_loss[np.array(all_in_one)-1]).argsort()[:200] 
 idx = np.array(all_in_one)[idx_in_subset] - 1
 
@@ -135,8 +135,8 @@ for ii in range(6,7):
     plt.legend()
     
 #%% Generate output
-df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
-                            1 + errorWhen. astype(int)]).T, columns = ['day','time'])
+df = pd.DataFrame(np.array([1+idx[:250].astype(int), \
+                            1 + errorWhen[:250]. astype(int)]).T, columns = ['day','time'])
 df.to_csv('submission.txt', index = False)
 df.head()
 
@@ -189,16 +189,35 @@ idx10 = np.array(df10["day"])
 idx11 = np.array(df11["day"])
 idx12 = np.array(df12["day"])
 
-# idx2_in_idx1 = []
+
 all_in_one = []
 
-for i in range(len(test_data)):
-    if (i in idx3 and i in idx4) or (i in idx7 and i in idx8) or\
-        (i in idx11 and i in idx12) or ((i in idx9 and i in idx10) or (i in idx1 and i in idx2)):
-        # if ((i in idx3 and i in idx4) and (i in idx1 or i in idx5 or i in idx7)):# or (i in idx5 and i in idx6) or (i in idx1 and i in idx2):
-          # if((i in idx1 and i in idx2) or (i in idx3 and i in idx4) or (i in idx5 and i in idx6) or (i in idx7 and i in idx8)): 
-            all_in_one.append(i)
+# for i in range(len(test_data)+1):
+#     if i in idx3[:150] or (i in idx3[:250] and i in idx4[:250]) or (i in idx7[:250] and i in idx8[:250]) or\
+#         (i in idx11[:60] and i in idx12[:60]) or (i in idx9[:60] and i in idx10[:60]) \
+#             or (i in idx1[:50] and i in idx2[:50]):
+#         # if ((i in idx3 and i in idx4) and (i in idx1 or i in idx5 or i in idx7)):# or (i in idx5 and i in idx6) or (i in idx1 and i in idx2):
+#           # if((i in idx1 and i in idx2) or (i in idx3 and i in idx4) or (i in idx5 and i in idx6) or (i in idx7 and i in idx8)): 
+#             all_in_one.append(i)
 
+
+for i in range(len(test_data)+1):
+    cnt = 0
+    if i in idx3[:150]:
+        cnt += 2
+    if (i in idx3[:250] and i in idx4[:250]): 
+         cnt += 2
+    if (i in idx7[:250] and i in idx8[:250]):
+       cnt += 2
+    if (i in idx11[:60] and i in idx12[:60]):
+         cnt += 2
+    if (i in idx9[:60] and i in idx10[:60]):
+         cnt += 2
+    if (i in idx1[:50] and i in idx2[:50]):
+         cnt += 2
+    if cnt > 1:
+        all_in_one.append(i)
+            
 #%%
 from matplotlib import pyplot as plt
 from celluloid import Camera
@@ -225,6 +244,17 @@ animation.save('dynamic_images2.gif')
 
 
 #%%
-for i in range(126, 144):
-    plt.figure()
-    plt.plot(test_data[df["day"][i],:])
+for i in range(189,200):
+    # plt.figure()
+    plt.plot(test_data[df["day"][i] - 1,:])
+    
+#%%
+df.loc[12]["time"] = 200
+df.loc[23:27]["time"] = 1102
+df.loc[31:43]["time"] = 1356
+df.loc[45:46]["time"] = 1356
+df.loc[48:53]["time"] = 1356
+df.loc[55:57]["time"] = 1356
+df.loc[59:61]["time"] = 1356
+df.loc[85]["time"] = 220
+df.loc[107]["time"] = 540
