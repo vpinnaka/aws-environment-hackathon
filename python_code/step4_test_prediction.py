@@ -22,7 +22,8 @@ testingData = test_data2.astype(np.float32)
 x_test_pred = model.forward(torch.from_numpy(testingData))
 
 # test_mae_loss = np.median(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
-test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
+# test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.9,axis = 1)
+test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy())**2, axis = 1)
 test_mae_loss = test_mae_loss.reshape((-1))
 
 plt.figure(figsize=(6,3)) 
@@ -51,7 +52,7 @@ errorPeriod = []
 
 
 for i in range(200):
-    threshold = np.quantile(error[i], 0.95)
+    threshold = np.quantile(error[i], 0.9)
     errorPeriod.append(np.where((error[i] >= threshold).tolist()))
     # consecutive 20+ points anomalous
     # maxErrorLoc = np.where(error[i] == np.max(error[i]))[0][0]   
@@ -102,10 +103,10 @@ import imageio
 #     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
 #     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
 #     plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
-#                  linewidth = 3, label = 'anomaly')
+#                   linewidth = 3, label = 'anomaly')
         
 #     plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
-#          markeredgewidth=.5, markeredgecolor='k', label = 'start')
+#           markeredgewidth=.5, markeredgecolor='k', label = 'start')
 #     plt.ylim([-4.5, 5])
 #     # plt.plot([i] * 10)
 #     camera.snap()
@@ -133,7 +134,7 @@ for ii in range(6,7):
 #%% Generate output
 df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
                             errorWhen. astype(int)]).T, columns = ['day','time'])
-df.to_csv('submission_quantile.txt', index = False)
+df.to_csv('submission_nofilter_mean.txt', index = False)
 df.head()
 
 #%%
@@ -158,18 +159,50 @@ def parse_submission ( filename ):
 # dayIndicators, startSampleIndicators = parse_submission ( 'submission.txt')
 
 #%% compare 3 methods
-df_mean = pd.read_csv("submission_mean.txt")
-df_median = pd.read_csv("submission_median.txt")
-df_quantile = pd.read_csv("submission_quantile.txt")
+df1 = pd.read_csv("submission_filter_mean.txt")
+df2 = pd.read_csv("submission_nofilter_mean.txt")
+df3 = pd.read_csv("submission_filter_relu.txt")
+df4 = pd.read_csv("submission_nofilter_relu.txt")
+df5 = pd.read_csv("submission_filter_model.txt")
+df6 = pd.read_csv("submission_nofilter_model.txt")
 
-idx1 = np.array(df_mean["day"])
-idx2 = np.array(df_median["day"])
-idx3 = np.array(df_quantile["day"])
+idx1 = np.array(df1["day"])
+idx2 = np.array(df2["day"])
+idx3 = np.array(df3["day"])
+idx4 = np.array(df4["day"])
+idx5 = np.array(df5["day"])
+idx6 = np.array(df6["day"])
 
 # idx2_in_idx1 = []
 all_in_one = []
 
-for i in idx1:
-    if i in idx2 and i in idx3:
-        all_in
+for i in range(len(test_data)):
+    # if i in idx3:
+        if (i in idx1 and i in idx2) or (i in idx3 and i in idx4) or (i in idx5 and i in idx6):
+            all_in_one.append(i)
+
+#%%
+from matplotlib import pyplot as plt
+from celluloid import Camera
+import matplotlib.animation as animation
+import imageio
+
+fig = plt.figure(figsize=(10,3))
+camera = Camera(fig)
+
+for ii in range(len(all_in_one)):
+    plt.plot(test_data[all_in_one[ii]-1, :], linewidth = 3, label ='raw', color = 'b')
+    plt.plot(x_test_pred.detach().numpy()[all_in_one[ii]-1,:], linewidth = 3, label = 'predict', color = 'r')
+    
+    # plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
+    #               linewidth = 3, label = 'anomaly')
+        
+    # plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
+    #       markeredgewidth=.5, markeredgecolor='k', label = 'start')
+    plt.ylim([-4.5, 5])
+    # plt.plot([i] * 10)
+    camera.snap()
+animation = camera.animate()
+animation.save('dynamic_images2.gif')
+
 
