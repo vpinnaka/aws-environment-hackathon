@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import matplotlib.pylab as plt
 from scipy.signal import lfilter
-
+import copy
 
 # Create our own anomalous data set and see how the model performs
 npTrainMatrix = np.load('npTrainMatrix.npy')
@@ -15,7 +15,7 @@ randomRows = np.random.choice(len(npTrainMatrix),200, replace = False)
 labels = np.zeros(len(npTrainMatrix))
 labels[randomRows] = 1
 
-import copy
+
 constructedData = np.random.permutation(npTrainMatrix)  # shuffled training data
 constructedData2 = copy.copy(constructedData) 
 
@@ -39,7 +39,7 @@ testingData = constructedData2.astype(np.float32)
 testingData = constructedData2_filter.astype(np.float32) # filter
 x_test_pred = model.forward(torch.from_numpy(testingData))
 
-test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
+test_mae_loss = np.median(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
 # test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
 test_mae_loss = test_mae_loss.reshape((-1))
 

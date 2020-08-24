@@ -102,7 +102,7 @@ def train_model ( model, dataLoader, targeDevice, nEpochs = 10 ):
 
 
 
-model, lossHistory, batchLoss = train_model( model, dataLoaderTrain, targetDevice, nEpochs = 10 )
+model, lossHistory, batchLoss = train_model( model, dataLoaderTrain, targetDevice, nEpochs = 30 )
 
 # print('elapsed time : {} '.format(time.time() - startTime))
 MODEL_PATH = 'model.pth'

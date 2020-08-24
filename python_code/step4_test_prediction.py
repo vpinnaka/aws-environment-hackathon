@@ -21,8 +21,8 @@ testingData = test_data2.astype(np.float32)
 
 x_test_pred = model.forward(torch.from_numpy(testingData))
 
-test_mae_loss = np.mean(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
-# test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
+# test_mae_loss = np.median(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), axis = 1)
+test_mae_loss = np.quantile(np.abs(testingData[:,:16*96] - x_test_pred[:,:16*96].detach().numpy()), 0.95,axis = 1)
 test_mae_loss = test_mae_loss.reshape((-1))
 
 plt.figure(figsize=(6,3)) 
@@ -49,8 +49,9 @@ error = np.abs(x_test_pred.detach().numpy()[idx[:200], :16*96] - testingData[idx
 errorWhen = np.zeros(200)
 errorPeriod = []
 
+
 for i in range(200):
-    threshold = np.quantile(error[i], 0.9)
+    threshold = np.quantile(error[i], 0.95)
     errorPeriod.append(np.where((error[i] >= threshold).tolist()))
     # consecutive 20+ points anomalous
     # maxErrorLoc = np.where(error[i] == np.max(error[i]))[0][0]   
@@ -65,7 +66,9 @@ for i in range(200):
         if (j+1) in np.array(sorted(err)) and (j+2) in np.array(sorted(err)) and \
             (j+3) in np.array(sorted(err)) and (j+4) in np.array(sorted(err)) and \
                  (j+5) in np.array(sorted(err)) and (j+6) in np.array(sorted(err))\
-                     and (j+7) in np.array(sorted(err)) and (j+8) in np.array(sorted(err)):
+            and (j+7) in np.array(sorted(err)) and (j+8) in np.array(sorted(err))\
+            and (j+9) in np.array(sorted(err)) and (j+10) in np.array(sorted(err)) and\
+                (j+11) in np.array(sorted(err)) and (j+12) in np.array(sorted(err)):
             maxErrorLoc = j
             break
     
@@ -93,21 +96,21 @@ from celluloid import Camera
 import matplotlib.animation as animation
 import imageio
 
-fig = plt.figure(figsize=(10,3))
-camera = Camera(fig)
-for ii in range(200):
-    plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
-    plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
-    plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
-                 linewidth = 3, label = 'anomaly')
+# fig = plt.figure(figsize=(10,3))
+# camera = Camera(fig)
+# for ii in range(200):
+#     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
+#     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
+#     plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
+#                  linewidth = 3, label = 'anomaly')
         
-    plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
-         markeredgewidth=.5, markeredgecolor='k', label = 'start')
-    plt.ylim([-4.5, 5])
-    # plt.plot([i] * 10)
-    camera.snap()
-animation = camera.animate()
-animation.save('dynamic_images2.gif')
+#     plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
+#          markeredgewidth=.5, markeredgecolor='k', label = 'start')
+#     plt.ylim([-4.5, 5])
+#     # plt.plot([i] * 10)
+#     camera.snap()
+# animation = camera.animate()
+# animation.save('dynamic_images2.gif')
 
 
 
@@ -130,16 +133,43 @@ for ii in range(6,7):
 #%% Generate output
 df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
                             errorWhen. astype(int)]).T, columns = ['day','time'])
-df.to_csv('submission.txt', index = False)
+df.to_csv('submission_quantile.txt', index = False)
 df.head()
 
-#%% mean shape
+#%%
+def parse_submission ( filename ):
+    dayIndicators = [] 
+    startSampleIndicators = []
+    lineCount = 0 
+    with open(filename) as submission_text:
+        line = submission_text.readline()        
+        while line:
+            if lineCount > 200: break
+                    
+            dayIndicators += [line.split(',')[0].strip()]
+            startSampleIndicators += [line.split(',')[1].strip()]
+            
+            print( f'parsing line#{lineCount}: {line}' )
+            line = submission_text.readline()
+            lineCount += 1
+            
+    return dayIndicators, startSampleIndicators
 
-anomaly = np.array(np.where(test_data[:, 0] > 3)).T
-# for i in range(200,210):
-#     plt.figure(figsize=(10, 3))
-#     plt.plot(testingData[anomaly[i], :].T)
-#
-meanAb =  np.mean(np.median(test_data[anomaly, :], axis = 1),axis = 0)
-plt.figure
-plt.plot(meanAb)
+# dayIndicators, startSampleIndicators = parse_submission ( 'submission.txt')
+
+#%% compare 3 methods
+df_mean = pd.read_csv("submission_mean.txt")
+df_median = pd.read_csv("submission_median.txt")
+df_quantile = pd.read_csv("submission_quantile.txt")
+
+idx1 = np.array(df_mean["day"])
+idx2 = np.array(df_median["day"])
+idx3 = np.array(df_quantile["day"])
+
+# idx2_in_idx1 = []
+all_in_one = []
+
+for i in idx1:
+    if i in idx2 and i in idx3:
+        all_in
+
