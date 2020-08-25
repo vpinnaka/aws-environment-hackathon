@@ -33,9 +33,9 @@ plt.ylabel("No of samples")
 plt.show()
 
 #%%
-idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
-# idx_in_subset = (-test_mae_loss[np.array(all_in_one)-1]).argsort()[:200] 
-# idx = np.array(all_in_one)[idx_in_subset] - 1
+# idx = (-test_mae_loss).argsort() # predicted windows where anomaly exists
+idx_in_subset = (-test_mae_loss[np.array(all_in_one)-1]).argsort()[:200] 
+idx = np.array(all_in_one)[idx_in_subset] - 1
 
 pred = np.zeros(len(testingData))
 pred[idx[:200]] = 1
@@ -81,7 +81,7 @@ for i in range(200):
 #%% visualize anomalies
 ii = 1
 
-for ii in range(220,225):
+for ii in range(5):
     plt.figure(figsize=(10,3))
     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw')
     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict')
@@ -102,14 +102,14 @@ import imageio
 
 fig = plt.figure(figsize=(10,3))
 camera = Camera(fig)
-for ii in range(300,400):
+for ii in range(200):
     plt.plot(test_data[idx[ii], :], linewidth = 3, label ='raw', color = 'b')
     plt.plot(x_test_pred.detach().numpy()[idx[ii],:], linewidth = 3, label = 'predict', color = 'r')
-    # plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
-    #               linewidth = 3, label = 'anomaly')
+    plt.plot( np.array((errorPeriod[ii])).T, test_data[idx[ii],errorPeriod[ii]].T,'.',color='y',\
+                  linewidth = 3, label = 'anomaly')
         
-    # plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
-    #       markeredgewidth=.5, markeredgecolor='k', label = 'start')
+    plt.plot( errorWhen[ii], test_data[idx[ii],int(errorWhen[ii])],'o',markersize=10, markerfacecolor='r',
+          markeredgewidth=.5, markeredgecolor='k', label = 'start')
     plt.ylim([-4.5, 5])
     # plt.plot([i] * 10)
     camera.snap()
@@ -137,7 +137,7 @@ for ii in range(6,7):
 #%% Generate output
 df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
                             1 + errorWhen[:200]. astype(int)]).T, columns = ['day','time'])
-df.to_csv('submission_v7_nofilter.txt', index = False)
+df.to_csv('submission_v2.txt', index = False)
 df.head()
 
 #%%
@@ -178,6 +178,8 @@ df11 = pd.read_csv("submission_filter_v3.txt")
 df12 = pd.read_csv("submission_nofilter_v3.txt") # quantile loss
 df13 = pd.read_csv("submission_v6_nofilter.txt") # larger training set w/ test
 df14 = pd.read_csv("submission_v6_filter.txt")
+df15 = pd.read_csv("submission_v7_nofilter.txt") # larger training set w/ test
+df16 = pd.read_csv("submission_v7_filter.txt")
 
 idx0 = np.array(df["day"])
 idx1 = np.array(df1["day"])
@@ -194,6 +196,8 @@ idx11 = np.array(df11["day"])
 idx12 = np.array(df12["day"])
 idx13 = np.array(df13["day"])
 idx14 = np.array(df14["day"])
+idx15 = np.array(df15["day"])
+idx16 = np.array(df16["day"])
 
 
 all_in_one = []
@@ -224,7 +228,9 @@ all_in_one = []
 #         all_in_one.append(i)
 
 for i in range(len(test_data)+1):    
-    if (i in idx3 and i in idx4) or (i in idx13 and i in idx14) or (i in idx7[:200] and i in idx8[:200]):
+    if (i in idx16[:110]) or (i in idx3 and i in idx4) or (i in idx13 and i in idx14) or (i in idx15 and i in idx16) or\
+        (i in idx7[:200] and i in idx8[:200]) or (i in idx11[:60] and i in idx12[:60])\
+            or (i in idx9[:60] and i in idx10[:60]) or (i in idx1[:50] and i in idx2[:50]):
         all_in_one.append(i)
 
      
@@ -254,10 +260,17 @@ animation.save('dynamic_images2.gif')
 
 
 #%%
-for i in locs[:5]:
-    plt.figure()
-    plt.plot(test_data[i,:])
-    
+df = pd.read_csv("submission.txt")
+df2 = pd.read_csv("submission_v2.txt")
+idx0 = np.array(df["day"])
+idx1 = np.array(df2["day"])
+cnt = []
+
+# start = 0
+for ii in range(len(test_data)+1): 
+    if ii in idx0 and ii  in idx1:
+        cnt.append(ii)
+        
 #%%
 df.loc[12]["time"] = 200
 df.loc[23:27]["time"] = 1102
