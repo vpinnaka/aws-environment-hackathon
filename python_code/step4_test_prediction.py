@@ -7,7 +7,7 @@ from scipy.signal import lfilter
 
 
 # MODEL_PATH = 'model.pth'
-MODEL_PATH = 'models/model_RELU_v4.pth'
+MODEL_PATH = 'models/model_RELU_v7.pth'
 model = torch.load(MODEL_PATH)
 
 
@@ -137,7 +137,7 @@ for ii in range(6,7):
 #%% Generate output
 df = pd.DataFrame(np.array([1+idx[:200].astype(int), \
                             1 + errorWhen[:200]. astype(int)]).T, columns = ['day','time'])
-df.to_csv('submissionv2.txt', index = False)
+df.to_csv('submission_v7_nofilter.txt', index = False)
 df.head()
 
 #%%
@@ -163,7 +163,7 @@ def parse_submission ( filename ):
 
 #%% compare 3 methods
 # !cd /experiments
-df = pd.read_csv("submission.txt")
+# df = pd.read_csv("submission.txt")
 df1 = pd.read_csv("submission_filter_mean.txt")
 df2 = pd.read_csv("submission_nofilter_mean.txt")
 df3 = pd.read_csv("submission_filter_relu.txt")
@@ -176,6 +176,8 @@ df9 = pd.read_csv("submission_filter_median.txt")
 df10 = pd.read_csv("submission_nofilter_median.txt") # median loss
 df11 = pd.read_csv("submission_filter_v3.txt")
 df12 = pd.read_csv("submission_nofilter_v3.txt") # quantile loss
+df13 = pd.read_csv("submission_v6_nofilter.txt") # larger training set w/ test
+df14 = pd.read_csv("submission_v6_filter.txt")
 
 idx0 = np.array(df["day"])
 idx1 = np.array(df1["day"])
@@ -190,8 +192,11 @@ idx9 = np.array(df9["day"])
 idx10 = np.array(df10["day"])
 idx11 = np.array(df11["day"])
 idx12 = np.array(df12["day"])
+idx13 = np.array(df13["day"])
+idx14 = np.array(df14["day"])
 
 
+all_in_one = []
 # for i in range(len(test_data)+1):
 #     if i in idx3[:150] or (i in idx3[:250] and i in idx4[:250]) or (i in idx7[:250] and i in idx8[:250]) or\
 #         (i in idx11[:60] and i in idx12[:60]) or (i in idx9[:60] and i in idx10[:60]) \
@@ -201,23 +206,28 @@ idx12 = np.array(df12["day"])
 #             all_in_one.append(i)
 
 
-for i in range(len(test_data)+1):
-    cnt = 0
-    if i in idx3[:150]:
-        cnt += 2
-    if (i in idx3[:250] and i in idx4[:250]): 
-          cnt += 2
-    if (i in idx7[:250] and i in idx8[:250]):
-        cnt += 2
-    if (i in idx11[:60] and i in idx12[:60]):
-          cnt += 2
-    if (i in idx9[:60] and i in idx10[:60]):
-          cnt += 2
-    if (i in idx1[:50] and i in idx2[:50]):
-          cnt += 2
-    if cnt > 1:
+# for i in range(len(test_data)+1):
+#     cnt = 0
+#     if i in idx3[:150]:
+#         cnt += 2
+#     if (i in idx3[:250] and i in idx4[:250]): 
+#           cnt += 2
+#     if (i in idx7[:250] and i in idx8[:250]):
+#         cnt += 2
+#     if (i in idx11[:60] and i in idx12[:60]):
+#           cnt += 2
+#     if (i in idx9[:60] and i in idx10[:60]):
+#           cnt += 2
+#     if (i in idx1[:50] and i in idx2[:50]):
+#           cnt += 2
+#     if cnt > 1:
+#         all_in_one.append(i)
+
+for i in range(len(test_data)+1):    
+    if (i in idx3 and i in idx4) or (i in idx13 and i in idx14) or (i in idx7[:200] and i in idx8[:200]):
         all_in_one.append(i)
-            
+
+     
 #%%
 from matplotlib import pyplot as plt
 from celluloid import Camera
@@ -244,9 +254,9 @@ animation.save('dynamic_images2.gif')
 
 
 #%%
-for i in range(189,200):
-    # plt.figure()
-    plt.plot(test_data[df["day"][i] - 1,:])
+for i in locs[:5]:
+    plt.figure()
+    plt.plot(test_data[i,:])
     
 #%%
 df.loc[12]["time"] = 200
@@ -258,3 +268,14 @@ df.loc[55:57]["time"] = 1356
 df.loc[59:61]["time"] = 1356
 df.loc[85]["time"] = 220
 df.loc[107]["time"] = 540
+#%% isolation forest
+
+from sklearn.ensemble import IsolationForest
+model=IsolationForest(n_estimators=50, max_samples='auto', contamination=float(0.02),max_features=1.0)
+model.fit(test_data)
+score =model.decision_function(test_data)
+anomaly = model.predict(test_data)
+locs = np.where(anomaly==-1)[0].tolist()
+
+
+
