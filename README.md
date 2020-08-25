@@ -1,7 +1,7 @@
 # environmental-hackathon
 https://environmentalhack.com/
 
-> ### [Final Submission File]('./final_submission/submission.txt')
+> ### [Final Submission File](final_submission/submission.txt)
 
 # Demo Link
 https://d8z2jjw1flsqp.cloudfront.net/
