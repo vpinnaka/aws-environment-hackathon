@@ -1,0 +1,31 @@
+type Co2 @model {
+  id: ID!
+  name: String!
+  value: Float!
+  timestamp: String
+  anamoly: Boolean
+}
+
+type Temparature @model {
+  id: ID!
+  name: String!
+  value: Float!
+  timestamp: String
+  anamoly: Boolean
+}
+
+type Dewpoint @model {
+  id: ID!
+  name: String!
+  value: Float!
+  timestamp: String
+  anamoly: Boolean
+}
+
+type Relativehumidity @model {
+  id: ID!
+  name: String!
+  value: Float!
+  timestamp: String
+  anamoly: Boolean
+}

@@ -1,0 +1,41 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-awshackathon-dev-195153-authRole",
+            "UnauthRoleArn": "arn:aws:iam::131435778671:role/amplify-awshackathon-dev-195153-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::131435778671:role/amplify-awshackathon-dev-195153-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-awshackathon-dev-195153-deployment",
+            "UnauthRoleName": "amplify-awshackathon-dev-195153-unauthRole",
+            "StackName": "amplify-awshackathon-dev-195153",
+            "StackId": "arn:aws:cloudformation:us-east-1:131435778671:stack/amplify-awshackathon-dev-195153/465a9f00-e359-11ea-985f-12da3ecd6186",
+            "AmplifyAppId": "dnn6bxl4a295z"
+        }
+    },
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-awshackathon-prod-143955-authRole",
+            "UnauthRoleArn": "arn:aws:iam::131435778671:role/amplify-awshackathon-prod-143955-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::131435778671:role/amplify-awshackathon-prod-143955-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-awshackathon-prod-143955-deployment",
+            "UnauthRoleName": "amplify-awshackathon-prod-143955-unauthRole",
+            "StackName": "amplify-awshackathon-prod-143955",
+            "StackId": "arn:aws:cloudformation:us-east-1:131435778671:stack/amplify-awshackathon-prod-143955/305e0610-e589-11ea-80c1-0e424e0e060d",
+            "AmplifyAppId": "dnn6bxl4a295z"
+        }
+    },
+    "staging": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-awshackathon-staging-222132-authRole",
+            "UnauthRoleArn": "arn:aws:iam::131435778671:role/amplify-awshackathon-staging-222132-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::131435778671:role/amplify-awshackathon-staging-222132-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-awshackathon-staging-222132-deployment",
+            "UnauthRoleName": "amplify-awshackathon-staging-222132-unauthRole",
+            "StackName": "amplify-awshackathon-staging-222132",
+            "StackId": "arn:aws:cloudformation:us-east-1:131435778671:stack/amplify-awshackathon-staging-222132/ad61dac0-e5c9-11ea-ae18-0ec6977a61f1",
+            "AmplifyAppId": "dnn6bxl4a295z"
+        }
+    }
+}

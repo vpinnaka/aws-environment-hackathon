@@ -1,0 +1,12 @@
+.sidebaroption{
+    display: flex;
+    margin-top: 5px;
+    align-items: center;
+    font-size: 15px;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.sidebaroption:hover{
+    background-color: rgb(40, 70, 70);
+}

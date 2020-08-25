@@ -1,7 +1,17 @@
+body{
+  --theme-color: darkslategray;
+  overflow: hidden;
+}
+
 .app {
   align-content: center;
   width: 100%;
   background-color: snow;
   align-items: baseline;
 
+}
+
+.app__body {
+  display: flex;
+  height: 100vh;
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import { AppBar, Typography, Toolbar } from "@material-ui/core";
 import "./Header.css";
 
@@ -22,16 +23,20 @@ function Header() {
   }, []);
 
   return (
-    <AppBar className="header" position="static">
-         <Toolbar>
-      <Typography variant="h6" color="inherit" className="header__title">
-        AWS Spheres
-      </Typography>
-      <Typography color="inherit" className="header__time">
-        {dt}
-      </Typography>
-      </Toolbar>
-    </AppBar>
+    <div className="header" position="static">
+      <div className="header__left">
+        <h3>
+          AWS Spheres
+        </h3>
+      </div>
+      <div className="header__center">
+        <AccessTimeIcon />
+        <h3>
+          {dt}
+        </h3>
+      </div>
+      <div className="header__right"></div>
+    </div>
   );
 }
 

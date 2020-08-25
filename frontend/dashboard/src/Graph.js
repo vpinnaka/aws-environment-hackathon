@@ -1,95 +1,156 @@
-import React from 'react'
-import Plot from 'react-plotly.js';
-import sensordata from './data/temp.json';
-import './Graph.css'
+import 'date-fns';
+import React, { useState, useEffect } from "react";
+import { formatISO } from 'date-fns';
+import Plot from "react-plotly.js";
+import { API, graphqlOperation } from "aws-amplify";
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import StatusBar from "./StausBar";
+import "./Graph.css";
 
-export default function Graph({sensor_type}) {
-    const values = sensordata[0]
+export default function Graph({ sensorFullName, gqlEnpoint, galQueryName, setanamolyState }) {
+  const [sensorValues, setsensorValues] = useState([]);
+  //const [anamolyState, setanamolyState] = useState({ value: false });
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const todayDateStr = formatISO(new Date(), { representation: 'date' })
 
-    var layout = {
-        // to highlight the timestamp we use shapes and create a rectangular
-        shapes: [
-            // 1st highlight during Feb 4 - Feb 6
-            {
-                type: 'rect',
-                // x-reference is assigned to the x-values
-                xref: 'x',
-                // y-reference is assigned to the plot paper [0,1]
-                yref: 'paper',
-                x0: values.timestamp[10],
-                y0: 0,
-                x1: values.timestamp[15],
-                y1: 1,
-                fillcolor: 'red',
-                opacity: 0.5,
-                line: {
-                    width: 0
-                }
-            },
-            // 2nd highlight during Feb 20 - Feb 23
-            {
-                type: 'rect',
-                xref: 'x',
-                yref: 'paper',
-                x0: values.timestamp[40],
-                y0: 0,
-                x1: values.timestamp[50],
-                y1: 1,
-                fillcolor: 'red',
-                opacity: 0.5,
-                line: {
-                    width: 0
-                }
+  useEffect(() => {
+    var selectedDateStr = formatISO(selectedDate, { representation: 'date' });
+    if (selectedDateStr == todayDateStr){
+      const interval = setInterval(() => {
+        fetchSensordata();
+      }, 1000);
+      return () => clearInterval(interval);
+    }else{
+      fetchSensordata();
+    }
+    
+  }, [sensorFullName, selectedDate]);
+
+  async function fetchSensordata() {
+    try {
+      const apiData = await API.graphql(
+        graphqlOperation(gqlEnpoint, {
+          filter:{
+            timestamp:{
+              contains: formatISO(selectedDate, { representation: 'date' })
+            }
+          },
+          limit: 10000,
+        })
+      );
+
+      setsensorValues(() => {
+        let sensorData = {
+          anomalies: [],
+        };
+        for (let key in apiData.data[galQueryName].items) {
+          let item = apiData.data[galQueryName].items[key];
+          if (!(item.name in sensorData)) {
+            sensorData[item.name] = [];
+          }
+          if (item.anamoly === true) {
+            var selectedDateStr = formatISO(selectedDate, { representation: 'date' });
+            if (selectedDateStr == todayDateStr){
+              setanamolyState({ value: true, sensorName: sensorFullName});
             }
             
-        ],
-        width: 1500,
-        height: 700,
+            sensorData["anomalies"].push(item.timestamp);
+          }
+          sensorData[item.name].push([item.timestamp, item.value]);
+        }
+        return sensorData;
+      });
+    } catch (error) {
+      console.log(error);
     }
-    return (
-        <div className='graph'>
-            <p>{sensor_type} sensor data</p>
-            <Plot
-            
-        data={[
-          {
-            x: values.timestamp,
-            y: values[sensor_type + '_1'],
-            type: 'scatter',
-            mode: 'lines',
-            name:sensor_type + '_1',
-            
-          },
-          {
-            x: values.timestamp,
-            y: values[sensor_type + '_2'],
-            type: 'scatter',
-            mode: 'lines',
-            name:sensor_type + '_2',
-            
-          },
-          {
-            x: values.timestamp,
-            y: values[sensor_type + '_3'],
-            type: 'scatter',
-            mode: 'lines',
-            name:sensor_type + '_3',
-            
-            
-          },
-          {
-            x: values.timestamp,
-            y: values[sensor_type + '_4'],
-            type: 'scatter',
-            mode: 'lines',
-            name:sensor_type + '_4',
-            
-          },
-          
-        ]}
-        layout={layout}
-        config = {{responsive: true}}
+  }
+
+  function getAnamolusData(anomalies) {
+    let shapes = [];
+    anomalies.sort().forEach((date) => {
+      shapes.push({
+        type: "line",
+        xref: "x",
+        yref: "paper",
+        x0: date,
+        y0: 0,
+        x1: date,
+        y1: 1,
+        line: {
+          color: "red",
+          width: 3,
+          opacity: 0.2,
+        },
+        name: "anamoly",
+      });
+    });
+    return shapes;
+  }
+
+  function getPlotdata(sensorValues) {
+    let values = [];
+    for (const [sensorName, sensorValue] of Object.entries(sensorValues)) {
+      if (sensorName === "anomalies") {
+        continue;
+      }
+      let xs = [];
+      let ys = [];
+      sensorValue.sort().forEach((element) => {
+        xs.push(element[0]);
+        ys.push(element[1]);
+      });
+
+      values.push({
+        x: xs,
+        y: ys,
+        type: "scatter",
+        mode: "lines",
+        name: sensorName,
+      });
+    }
+    return values;
+  }
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setanamolyState({ value: false, sensorName: ""});
+  };
+
+  return (
+    <div className="graph">
+      <div>
+        <h3>{sensorFullName} sensor data</h3>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker
+          disableToolbar
+          variant="inline"
+          format="MM/dd/yyyy"
+          margin="normal"
+          id="date-picker-inline"
+          label="Values record date"
+          value={selectedDate}
+          onChange={handleDateChange}
+          KeyboardButtonProps={{
+            "aria-label": "change date",
+          }}
+        />
+        </MuiPickersUtilsProvider>
+      </div>
+      <Plot
+        data={getPlotdata(sensorValues)}
+        layout={{
+          shapes: sensorValues.anomalies
+            ? getAnamolusData(sensorValues.anomalies)
+            : [],
+          width: 1500,
+          height: 700,
+        }}
+        config={{ responsive: true }}
       />
-        </div>
-    )
+      <p>
+        <strong>Note:</strong> Veritcal lines indicate anaomoly
+      </p>
+    </div>
+  );
 }
