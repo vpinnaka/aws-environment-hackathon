@@ -1,6 +1,6 @@
 body{
   --theme-color: darkslategray;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .app {
@@ -13,5 +13,5 @@ body{
 
 .app__body {
   display: flex;
-  height: 100vh;
+  height: 100%;
 }
