@@ -1,4 +1,4 @@
-# environmental-hackathon
+# SenseAnomali - environmental-hackathon
 https://environmentalhack.com/
 
 > ### [Final Submission File](final_submission/submission.txt)
